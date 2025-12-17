@@ -1,3 +1,9 @@
+# 1.3.584_20251218 (584)
+
+- Try to adapt to HyperOS 3.
+
+---
+
 # 1.3.583_20250411 (583)
 
 - The use of some risky devices is prohibitied.
