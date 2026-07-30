@@ -33,6 +33,6 @@ jobs:
           tag_name: ${{ steps.parse_version.outputs.VERSION_CODE }}
           name: Release ${{ steps.parse_version.outputs.VERSION }}
           body_path: changelog.md
-          files: Xiaomi-LPA_${{ steps.version.outputs.versionCode }}.zip
+          files: Xiaomi-LPA_${{ steps.parse_version.outputs.VERSION_CODE }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
