@@ -7,6 +7,9 @@ on:
   #   branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,15 +27,39 @@ jobs:
 
       - name: Package module folder
         run: |
-          zip -r Xiaomi-LPA_${{ steps.parse_version.outputs.VERSION_CODE }}.zip module/
+          cd module && zip -r ../Xiaomi-LPA_${{ steps.parse_version.outputs.VERSION_CODE }}.zip .
+
+      - name: Extract current version changelog
+        id: extract_changelog
+        run: |
+          VERSION_CODE="${{ steps.parse_version.outputs.VERSION_CODE }}"
+          awk -v code="$VERSION_CODE" '
+            BEGIN { found=0; block="" }
+            /^# .*\([0-9]+\)/ {
+              if (found) exit;
+              if ($0 ~ "\\(" code "\\)$") {
+                found=1;
+                next;
+              }
+            }
+            found {
+              if ($0 ~ /^---$/) exit;
+              block = block $0 "\n"
+            }
+            END { printf "%s", block }
+          ' changelog.md > current_changelog.md
+
+          if [ ! -s current_changelog.md ]; then
+            echo "No changelog content for version $VERSION_CODE." > current_changelog.md
+          fi
 
       - name: Create Release
         if: github.event_name == 'workflow_dispatch'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.parse_version.outputs.VERSION_CODE }}
-          name: Release ${{ steps.parse_version.outputs.VERSION }}
-          body_path: changelog.md
-          files: Xiaomi-LPA_${{ steps.version.outputs.versionCode }}.zip
+          name: ${{ steps.parse_version.outputs.VERSION }} (${{ steps.parse_version.outputs.VERSION_CODE }})
+          body_path: current_changelog.md
+          files: Xiaomi-LPA_${{ steps.parse_version.outputs.VERSION_CODE }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
