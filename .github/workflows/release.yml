@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse version from update.json
+        id: parse_version
+        run: |
+          VERSION=$(jq -r '.version' update.json)
+          VERSION_CODE=$(jq -r '.versionCode' update.json)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
+
+      - name: Package module folder
+        run: |
+          zip -r Xiaomi-LPA_${{ steps.parse_version.outputs.VERSION_CODE }}.zip module/
+
+      - name: Create Release
+        if: github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.parse_version.outputs.VERSION_CODE }}
+          name: Release ${{ steps.parse_version.outputs.VERSION }}
+          body_path: changelog.md
+          files: Xiaomi-LPA_${{ steps.version.outputs.versionCode }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
