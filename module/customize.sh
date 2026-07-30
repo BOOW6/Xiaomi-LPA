@@ -3,21 +3,33 @@ ui_print '- This is a beta version and may contain unstable content. Please use 
 device=$(getprop ro.product.device)
 
 if grep -Fxq "$device" "$MODPATH/device_blacklist"; then
-    ui_print "! This device ($device) is in the blacklist. Do not try to bypass the restrictions, which is dangerous."
-    abort 1
+  ui_print "! This device ($device) is in the blacklist. Do not try to bypass the restrictions, which is dangerous."
+  abort 1
 fi
 
 if $BOOTMODE; then
-    ui_print "- Installing from Magisk/KernelSU app"
-  else
-    ui_print "*********************************************************"
-    ui_print "! Install from recovery is NOT supported"
-    ui_print "! Please install from Magisk/KernelSU app"
-    abort    "*********************************************************"
-  fi
+  ui_print "- Installing from Magisk/KernelSU app"
+else
+  ui_print "*********************************************************"
+  ui_print "! Install from recovery is NOT supported"
+  ui_print "! Please install from Magisk/KernelSU app"
+  abort    "*********************************************************"
+fi
 
-pm install "$MODPATH/system/product/priv-app/MIUIEsimLPA/MIUIEsimLPA.apk" > /dev/null 2>&1 || { echo "! Failed to install com.miui.euicc."; abort 1; } && echo "- Install com.miui.euicc success."
-pm install "$MODPATH/system/product/priv-app/EuiccGoogle/EuiccGoogle.apk" > /dev/null 2>&1 || { echo "! Failed to install com.google.android.euicc."; abort 1; } && echo "- Install com.google.android.euicc success."
+pm install "$MODPATH/system/product/priv-app/MIUIEsimLPA/MIUIEsimLPA.apk" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "! Failed to install com.miui.euicc."
+  abort 1
+else
+  echo "- Install com.miui.euicc success."
+fi
+
+pm install "$MODPATH/system/product/priv-app/EuiccGoogle/EuiccGoogle.apk" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "! Failed to install com.google.android.euicc (ignored, continue)"
+else
+  echo "- Install com.google.android.euicc success."
+fi
 
 appops set com.miui.euicc android:read_device_identifiers allow
 appops set com.google.android.euicc android:read_device_identifiers allow
