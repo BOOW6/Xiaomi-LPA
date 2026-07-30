@@ -1,3 +1,12 @@
+# 1.3.585_20260731 (585)
+
+- Remove overlay
+- Update permissions, configs
+- Modify priv-app path
+- Restore LPA Apk modifications
+
+---
+
 # 1.3.584_20251218 (584)
 
 - Try to adapt to HyperOS 3.

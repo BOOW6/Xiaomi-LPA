@@ -13,11 +13,11 @@ if $BOOTMODE; then
     ui_print "*********************************************************"
     ui_print "! Install from recovery is NOT supported"
     ui_print "! Please install from Magisk/KernelSU app"
-    abort "*********************************************************"
+    abort    "*********************************************************"
   fi
 
-pm install "$MODPATH/system/system_ext/priv-app/EsimLPA/EsimLPA.apk" > /dev/null 2>&1 || { echo "! Failed to install com.miui.euicc. Please check your CorePatch."; abort 1; } && echo "- Install com.miui.euicc success."
-pm install "$MODPATH/system/system_ext/priv-app/EuiccGoogle/EuiccGoogle.apk" > /dev/null 2>&1 || { echo "! Failed to install com.google.android.euicc."; abort 1; } && echo "- Install com.google.android.euicc success."
+pm install "$MODPATH/system/product/priv-app/MIUIEsimLPA/MIUIEsimLPA.apk" > /dev/null 2>&1 || { echo "! Failed to install com.miui.euicc."; abort 1; } && echo "- Install com.miui.euicc success."
+pm install "$MODPATH/system/product/priv-app/EuiccGoogle/EuiccGoogle.apk" > /dev/null 2>&1 || { echo "! Failed to install com.google.android.euicc."; abort 1; } && echo "- Install com.google.android.euicc success."
 
 appops set com.miui.euicc android:read_device_identifiers allow
 appops set com.google.android.euicc android:read_device_identifiers allow
