@@ -1,3 +1,10 @@
+# 1.3.586_20260801 (586)
+
+- Upgrade EUICC app to `D.2.1.944346941-gms`
+- Upgrade LPA app to `4.0.7.1`
+
+---
+
 # 1.3.585_20260731 (585)
 
 - Remove overlay
